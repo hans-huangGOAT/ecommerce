@@ -74,3 +74,13 @@ h1,h2,h3,h4,h5,h6{
     margin-top: 5px;
     transition: .1s;
 }
+
+.form-field{
+    width: 250px;
+    display: inline-block;
+    padding: 5px;
+}
+
+.hidden{
+    display: none!important;
+}
