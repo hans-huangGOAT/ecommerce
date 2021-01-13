@@ -46,7 +46,8 @@
             <br>
             <div class="box-element hidden" id="payment-info">
                 <small>Paypal Options</small>
-                <button class="btn btn-primary" id="make-payment">Make Payment</button>
+                <div id="paypal-button-container"></div>
+                <!--<button class="btn btn-primary" id="make-payment">Make Payment</button>-->
             </div>
         </div>
         <div class="col-lg-6">
@@ -70,9 +71,43 @@
         </div>
     </div>
 
+    <script src="https://www.paypal.com/sdk/js?client-id=AVq_G5zATWUhcTvzgu0nKknMUFp8ro8PZQRlqQk4aDp7ZvAtu-oD5MEC1troucO0Q7QrGHceYnx1OuXG&currency=USD"></script>
+
+    <script>
+        var total = '{{ order.get_cart_total }}'
+        // Render the PayPal button into #paypal-button-container
+        paypal.Buttons({
+
+            style: {
+                color: 'blue',
+                shape: 'pill',
+
+            },
+
+            // Set up the transaction
+            createOrder: function (data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: parseFloat(total).toFixed(2)
+                        }
+                    }]
+                });
+            },
+
+            // Finalize the transaction
+            onApprove: function (data, actions) {
+                return actions.order.capture().then(function (details) {
+                    submitFormData()
+                });
+            }
+
+
+        }).render('#paypal-button-container');
+    </script>
+
     <script type="text/javascript">
         var shipping = '{{ order.shipping }}'
-        var total = '{{ order.get_cart_total }}'
 
         if (shipping === 'False') {
             document.getElementById('shipping-info').innerHTML = '';
@@ -98,10 +133,11 @@
             document.getElementById('payment-info').classList.remove('hidden');
         })
 
-        document.getElementById('make-payment').addEventListener('click', function (e) {
-            submitFormData()
-        })
-
+        /*
+            document.getElementById('make-payment').addEventListener('click', function (e) {
+                submitFormData()
+            })
+        */
         function submitFormData() {
             console.log('Payment button clicked.')
 
